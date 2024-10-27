@@ -53,4 +53,12 @@ async function ListarByEmailAdmin(email) {
         return user[0];
 }
 
-export default { Inserir, ListarByEmail, Profile, InserirAdmin, ListarByEmailAdmin }
+async function Listar() {
+
+    let sql = `select id_user, name, email from users order by name`;
+
+    const users = await query(sql, []);
+    return users;
+}
+
+export default { Inserir, ListarByEmail, Profile, InserirAdmin, ListarByEmailAdmin, Listar }

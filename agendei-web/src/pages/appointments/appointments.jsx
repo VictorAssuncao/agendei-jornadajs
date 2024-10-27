@@ -1,9 +1,11 @@
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import "./appointments.css";
 import Navbar from "../../components/navbar/navbar.jsx";;
 import { Link, useNavigate } from "react-router-dom";
 import Appointment from "../../components/appointment/appointment.jsx";
 import { useEffect, useState } from "react";
 import api from "../../constants/api.js";
+import { confirmAlert } from "react-confirm-alert";
 
 function Appointments() {
 
@@ -20,7 +22,41 @@ function Appointments() {
     }
 
     function ClickDelete(id_appointment) {
-        console.log("Excluir " + id_appointment);
+        confirmAlert({
+            title: "Exclusão",
+            message: "Confirma exclusão desse agendamento?",
+            buttons: [
+                {
+                    label: "Sim",
+                    onClick: () => DeleteAppointment(id_appointment)
+                },
+                {
+                    label: "Não",
+                    onClick: () => { }
+                }
+            ]
+        });
+    }
+
+    async function DeleteAppointment(id) {
+
+        try {
+            const response = await api.delete("/appointments/" + id);
+
+            if (response.data) {
+                LoadAppointments();
+            }
+
+        } catch (error) {
+            if (error.response?.data.error) {
+                if (error.response.status == 401)
+                    return navigate("/");
+
+                alert(error.response?.data.error);
+            }
+            else
+                alert("Erro ao excluir dados");
+        }
     }
 
     async function LoadDoctors() {
@@ -45,7 +81,6 @@ function Appointments() {
     }
 
     async function LoadAppointments() {
-        console.log("LoadAppointments...");
 
         try {
             const response = await api.get("/admin/appointments", {
